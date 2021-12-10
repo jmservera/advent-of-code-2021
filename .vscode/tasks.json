@@ -32,7 +32,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/day1/SonarSweepTests/SonarSweepTests.csproj",
+                "${workspaceFolder}/day03/BinaryDiagnosticTests/BinaryDiagnosticTests.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

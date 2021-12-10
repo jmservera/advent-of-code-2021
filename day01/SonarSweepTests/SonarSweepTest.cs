@@ -9,7 +9,7 @@ public class SonarSweepTest{
     [InlineData("test.txt",7)]
     [InlineData("input.txt",1226)]
     public void SingleTest(string file, int expected){
-        var data=new TestData<int>(file);
+        var data=new DataReader<int>(file);
         var counter=new SonarSweepCounter();
         var original=Enumerable.ToArray(data);
 
@@ -30,7 +30,7 @@ public class SonarSweepTest{
     [InlineData("test.txt",5)]
     [InlineData("input.txt",1252)]
     public void WindowTest(string file, int expected){
-        var data=new TestData<int>(file);
+        var data=new DataReader<int>(file);
         var counter=new SonarSweepCounter();
         var original=Enumerable.ToArray(data);
         Assert.Equal(expected,counter.CountWindow(original,3));

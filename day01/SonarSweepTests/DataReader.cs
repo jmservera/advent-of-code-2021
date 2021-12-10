@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Collections;
 using System.IO;
 
-public class TestData<T> : IEnumerable<T> , IDisposable
+public class DataReader<T> : IEnumerable<T> , IDisposable
 {
     StreamReader reader;
-    public TestData(string fileName){
+    public DataReader(string fileName){
         reader = File.OpenText(fileName);
     }
 
@@ -19,7 +19,7 @@ public class TestData<T> : IEnumerable<T> , IDisposable
         Dispose(true);
     }
 
-    ~TestData()
+    ~DataReader()
     {
         Dispose(false);
     }    
