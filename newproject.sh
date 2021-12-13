@@ -20,5 +20,7 @@ dotnet new xunit -o $1/$2Tests
 dotnet sln add $1/$2Tests/$2Tests.csproj
 dotnet add $1/$2Tests/$2Tests.csproj reference $1/$2/$2.csproj
 
+printf 'i\n\t<ItemGroup>\n\t\t<Content Include=".\*.txt">\n\t\t\t<CopyToOutputDirectory>Always</CopyToOutputDirectory>\n\t\t</Content>\n\t\t<None Include=".\*.txt" />\n\t</ItemGroup>\n.\nw\n' | ex -s $1/$2Tests/$2Tests.csproj
+
 echo "Checking build"
 dotnet build
