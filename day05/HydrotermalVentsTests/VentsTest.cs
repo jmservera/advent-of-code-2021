@@ -25,10 +25,19 @@ public class VentsTest
 
     [Theory]
     [InlineData("test.txt",5)]
-    [InlineData("input.txt",5)]
+    [InlineData("input.txt",8111)]
     public void TestVents(string fileName, int expected){
         var data= DataLoader.LoadData(fileName);
-        var actual = Vents.Solve(data);
+        var actual = new Vents(data).Solve();
+        Assert.Equal(expected, actual);
+    }
+
+        [Theory]
+    [InlineData("test.txt",12)]
+    [InlineData("input.txt",22088)]
+    public void TestDiagVents(string fileName, int expected){
+        var data= DataLoader.LoadData(fileName);
+        var actual = new Vents(data).SolveDiag();
         Assert.Equal(expected, actual);
     }
 
