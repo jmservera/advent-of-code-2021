@@ -7,33 +7,40 @@ namespace Lanternfish
 {
     public class FishGrowth
     {
-        public static BigInteger Growth(IEnumerable<int> fish, int days, int threshold=500000){
-            List<int> fishList = new List<int>(fish);            
-            for(int d=0;d<days;d++){
+        Dictionary<int, long> cache = new Dictionary<int, long>();
+        public long Growth(IEnumerable<int> fishes, int days)
+        {
+            long sum = 0;
 
-                if(fishList.LongCount()>threshold){
-                    var first= fishList.Take(threshold/2);
-                    var second= fishList.Skip(threshold/2);
-                    Console.WriteLine($"{d} {fishList.LongCount()} {first.LongCount()} {second.LongCount()}");
-                    return Growth(first, days-d) + Growth(second, days-d);
-                }
-
-                int newFishes=0;
-                int count=fishList.Count;
-                for(int i=0;i<count;i++)
-                {
-                    if(fishList[i]==0){
-                        fishList[i]=6;
-                        newFishes++;
-                    }
-                    else{
-                        fishList[i]--;
-                    }
-                }
-
-                fishList.AddRange(Enumerable.Repeat(8,newFishes));
+            foreach (var fish in fishes)
+            {
+                sum += countFishes(fish, days);
             }
-            return fishList.LongCount();
+            return sum;
+        }
+
+        long countFishes(int fish, int days)
+        {
+            int key=fish+days*10;
+            if(!cache.ContainsKey(key))
+            {
+                if(days==0){
+                    return 1;
+                }
+                if(fish==0)
+                {
+                    var count= countFishes(6, days-1)+countFishes(8, days-1);
+                    cache[key] = count;
+                } else if(fish>days){
+                    cache[key] = 1;
+                }
+                else {
+                    var count= countFishes(fish-1, days-1);
+                    cache[key] = count;
+                }
+            }
+
+            return cache[key];
         }
     }
 }
