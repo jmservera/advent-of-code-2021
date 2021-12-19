@@ -18,7 +18,7 @@ namespace Day14.PolymerizationTests
 
         [Theory]
         [InlineData("test.txt", 2188189693529)]
-        // [InlineData("input.txt", 2188189693529)]
+        [InlineData("input.txt", 3776553567525)]
         public void TestLongReaction(string fileName, long expected)
         {
             var data = DataLoader.LoadData(fileName);

@@ -1,54 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Day14.Polymerization
 {
-    public class Template    
+    public class Template
     {
+
         string initPolymer;
-        Dictionary<string,char> rules;
-        public Template(string polymer, Dictionary<string,char> rules){
+        Dictionary<string, char> rules;
+        public Template(string polymer, Dictionary<string, char> rules)
+        {
             this.initPolymer = polymer;
             this.rules = rules;
         }
 
-        public long Reaction(int times){
-            string polymer=this.initPolymer;
-            StringBuilder sb = new StringBuilder();
-            for(int i=1;i<polymer.Length;i++){
-                sb.Append( react(new string(new char[]{polymer[i-1],polymer[i]}),times));
+        public long Reaction(int times)
+        {
+            string polymer = this.initPolymer;
+            var counts = new Dictionary<char, long>();
+
+            for (int i = 0; i < polymer.Length; i++)
+            {
+                if (counts.ContainsKey(polymer[i]))
+                {
+                    counts[polymer[i]]++;
+                }
+                else
+                    counts[polymer[i]] = 1;
+            }
+            for (int i = 0; i < polymer.Length - 1; i++)
+            {
+                // using a recursive function, but one for each character.
+                // As we do memoization repeated characters will get the same results
+                // in almost no time.
+                counts.Merge(react(polymer.Substring(i, 2), times));
             }
 
-            var finalPolymer=sb.ToString();
-            var groups=finalPolymer.GroupBy(c=>c).OrderByDescending(g=>g.LongCount());
-            var max = groups.First().LongCount();
-            var min = groups.Last().LongCount();
-            return max-min;
+            return counts.Max(x => x.Value) - counts.Min(x => x.Value);
         }
 
-        Dictionary<Tuple<string,int>,string> memo=new Dictionary<Tuple<string,int>,string>();
+        Dictionary<Tuple<string, int>, Dictionary<char, long>> memo = new Dictionary<Tuple<string, int>, Dictionary<char, long>>();
 
-        string react(string polymer, int times){
-            if(times==0){
-                return polymer;
-            }
-            var key=new Tuple<string,int>(polymer,times);
-
-            if(memo.ContainsKey(key)){
+        Dictionary<char, long> react(string polymer, int times)
+        {
+            // generating the full polymer string is too expensive, we only need to 
+            // calculate the quantity of each character and store it in a dictionary
+            // this technique alows us to store the dictionary to do memoization and avoid repeating operations
+            var key = new Tuple<string, int>(polymer, times);
+            if (memo.ContainsKey(key))
+            {
                 return memo[key];
             }
-
-            if(rules.ContainsKey(polymer)){
-                var newChar=rules[polymer];
-                var left=react(new string(new char[]{polymer[0],newChar}),times-1);
-                var right=react(new string(new char[]{newChar,polymer[1]}),times-1);
-                return memo[key]=string.Concat(left.Substring(0,left.Length-1),right);
+            Dictionary<char, long> counts = new Dictionary<char, long>();
+            if (rules.ContainsKey(polymer))
+            {
+                var newChar = rules[polymer];
+                if (counts.ContainsKey(newChar))
+                {
+                    counts[newChar]++;
+                }
+                else
+                {
+                    counts[newChar] = 1;
+                }
+                if (times > 1)
+                {
+                    var left = react(new string(new char[] { polymer[0], newChar }), times - 1);
+                    var right = react(new string(new char[] { newChar, polymer[1] }), times - 1);
+                    counts.Merge(left).Merge(right);
+                }
             }
-            else{
-                return memo[key]=polymer;
-            }
-        }           
+            memo[key] = counts;
+            return counts;
+        }
     }
+
+
 }
