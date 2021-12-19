@@ -18,11 +18,12 @@ namespace Day13.TransparentOrigamiTests
 
         [Theory]
         [InlineData("test.txt", 16)]
-        [InlineData("input.txt", 138)]
+        [InlineData("input.txt", 104)]
         public void CompleteFoldTest(string fileName, int expected)
         {
             var thermalImaging = DataLoader.LoadData(fileName);
             var actual = thermalImaging.Fold();
+            thermalImaging.Print();
             Assert.Equal(expected, actual);
         } 
     }

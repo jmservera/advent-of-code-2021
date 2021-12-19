@@ -17,7 +17,6 @@ namespace Day13.TransparentOrigami
                 if(string.IsNullOrEmpty(line.Trim()))
                 {                    
                     foldIndex=i+1;
-                    Console.WriteLine("FoldIndex: " + foldIndex);
                     break;
                 }
                 var split = line.Split(',');
@@ -30,10 +29,6 @@ namespace Day13.TransparentOrigami
                 var folds=split[split.Length-1].Split('=');
                 foldGuidance.Add(new string[] {folds[0],folds[1]});
             }
-            // foreach(var point in points)
-            // {
-            //     Console.WriteLine($"{point[0]},{point[1]}");
-            // }
             return new ThermalImaging(points.ToArray(), foldGuidance.ToArray());
         }
     }

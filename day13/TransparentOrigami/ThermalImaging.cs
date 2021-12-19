@@ -6,6 +6,8 @@ namespace Day13.TransparentOrigami
     public class ThermalImaging
     {
         bool[,] map;
+
+        bool[,] result;
         string[][] foldGuidance;
         public ThermalImaging(int[][] points, string[][] foldGuidance){
             var maxX= points.Select(x=>x[0]).Max();
@@ -25,7 +27,7 @@ namespace Day13.TransparentOrigami
         }
 
         public int Fold(int iterations=0){
-            var oldMap=map;
+            result=map;
             if(iterations==0){
                 iterations=foldGuidance.Length;
             }
@@ -33,41 +35,37 @@ namespace Day13.TransparentOrigami
                 var fold=foldGuidance[i];
                 bool[,] newMap;
 
-                Console.WriteLine($"Fold {i} {fold[0]}={fold[1]}\t {oldMap.GetLength(1)},{oldMap.GetLength(0)}");
-
                 if(fold[0]=="x"){                    
                     var xFold=int.Parse(fold[1]);
-                    newMap=new bool[oldMap.GetLength(0),xFold];
+                    newMap=new bool[result.GetLength(0),xFold];
 
-                    for(int y=0;y<oldMap.GetLength(0);y++){
-                        var top=oldMap.GetLength(1)-1;
+                    for(int y=0;y<result.GetLength(0);y++){
+                        var top=result.GetLength(1)-1;
                         for(int x=0;x<xFold;x++){
-                            newMap[y,x]=oldMap[y,x]|oldMap[y,top-x];
+                            newMap[y,x]=result[y,x]|result[y,top-x];
                         }
                     }
                 }
                 else{
                     var yFold=int.Parse(fold[1]);
-                    newMap=new bool[yFold,oldMap.GetLength(1)];
+                    newMap=new bool[yFold,result.GetLength(1)];
 
-                    for(int x=0;x<oldMap.GetLength(1);x++){
-                        var top=oldMap.GetLength(0)-1;
+                    for(int x=0;x<result.GetLength(1);x++){
+                        var top=result.GetLength(0)-1;
                         for(int y=0;y<yFold;y++){
-                            newMap[y,x]=oldMap[y,x]|oldMap[top-y,x];
+                            newMap[y,x]=result[y,x]|result[top-y,x];
                         }
                     }
                 }
-                oldMap=newMap;
+                result=newMap;
             }
             
 
-            showMap(oldMap);
-
             int count=0;
-            for(int y=0;y<oldMap.GetLength(0);y++){
-                for(int x=0;x<oldMap.GetLength(1);x++){
+            for(int y=0;y<result.GetLength(0);y++){
+                for(int x=0;x<result.GetLength(1);x++){
                     
-                    if(oldMap[y,x]){
+                    if(result[y,x]){
                         count++;
                     }
                 }
@@ -75,11 +73,11 @@ namespace Day13.TransparentOrigami
 
             return count;
         }
-        static void showMap(bool[,] map){
+        public void Print(){
             Console.WriteLine("Map:");
-            for(int y=0;y<map.GetLength(0);y++){
-                for(int x=0;x<map.GetLength(1);x++){
-                    Console.Write(map[y,x]?"▓":" ");
+            for(int y=0;y<result.GetLength(0);y++){
+                for(int x=0;x<result.GetLength(1);x++){
+                    Console.Write(result[y,x]?"▓":" ");
                 }
                 Console.WriteLine();
             }
