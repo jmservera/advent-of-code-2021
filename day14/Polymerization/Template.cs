@@ -20,6 +20,7 @@ namespace Day14.Polymerization
             string polymer = this.initPolymer;
             var counts = new Dictionary<char, long>();
 
+            //first count the original chars
             for (int i = 0; i < polymer.Length; i++)
             {
                 if (counts.ContainsKey(polymer[i]))
@@ -29,6 +30,7 @@ namespace Day14.Polymerization
                 else
                     counts[polymer[i]] = 1;
             }
+
             for (int i = 0; i < polymer.Length - 1; i++)
             {
                 // using a recursive function, but one for each character.
@@ -52,10 +54,13 @@ namespace Day14.Polymerization
             {
                 return memo[key];
             }
+
             Dictionary<char, long> counts = new Dictionary<char, long>();
+
             if (rules.ContainsKey(polymer))
             {
                 var newChar = rules[polymer];
+                // now count new chars
                 if (counts.ContainsKey(newChar))
                 {
                     counts[newChar]++;
@@ -64,6 +69,8 @@ namespace Day14.Polymerization
                 {
                     counts[newChar] = 1;
                 }
+
+                //and if we didn't reach the end count left and right expansion
                 if (times > 1)
                 {
                     var left = react(new string(new char[] { polymer[0], newChar }), times - 1);
