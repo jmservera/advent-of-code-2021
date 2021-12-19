@@ -60,12 +60,10 @@ public class Vents
             }
         }
 
-        printGrid();
-
         return countVents();
     }
 
-    private void printGrid()
+    public void PrintGrid()
     {
         Console.WriteLine();
         for (int y = 0; y < grid.Length; y++)
@@ -74,7 +72,7 @@ public class Vents
         }
     }
 
-    public object SolveDiag()
+    public int SolveDiag()
     {
         initGrid();
 
@@ -82,8 +80,6 @@ public class Vents
         {
             generateLine(line);
         }
-
-        printGrid();
 
         return countVents();
     }
