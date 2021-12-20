@@ -18,7 +18,7 @@ namespace Day15.ChitonTests
 
         [Theory]
         [InlineData("test.txt",315)]
-        [InlineData("input.txt",2835)]
+        [InlineData("input.txt",2825)]
         public void LowestRiskFull(string fileName, int expected)
         {
             var path = DataLoader.LoadData(fileName);
