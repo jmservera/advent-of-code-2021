@@ -2,101 +2,141 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Priority_Queue;
+
 namespace Day15.Chiton
 {
-    public class Path
-    {
-        int[][] data;
-        public Path(int[][] data)
-        {
-            this.data = data;
+    public class Node:FastPriorityQueueNode{
+        public Node up,down,left,right;
+        public int x,y,value;
+
+        public Node(int x, int y, int value){
+            this.x = x;
+            this.y = y;
+            this.value=value;
         }
 
-        public void ExpandMap()
-        {
-            var newData = new int[data.Length * 5][];
+        public override string ToString(){
+            return $"({x},{y}):{value}";
+        }
 
-            for (int i = 0; i < 5; i++)
+        public override int GetHashCode()
+        {
+            return x*10000+ y;
+        }
+    }
+    public class Path
+    {
+
+        Node[][] nodes;
+
+        public Path(int[][] originalData, bool expand = false)
+        {
+            generateMap(originalData, expand);
+        }
+        void generateMap(int[][] data, bool expand)
+        {
+            int iterations=expand?5:1;
+            nodes= new Node[data.Length * iterations ][];
+
+            for (int i = 0; i < iterations; i++)
             {
                 for (int x = 0; x < data.Length; x++)
                 {
-                    newData[x + i * data.Length] = new int[data[0].Length * 5];
-                    for (int j = 0; j < 5; j++)
+                    var xpos=x + i * data.Length;
+                    nodes[xpos] = new Node[data[0].Length * iterations];
+                    for (int j = 0; j < iterations; j++)
                     {
                         for (int y = 0; y < data[0].Length; y++)
                         {
-                            var value = (data[x][y] + i + j) - (((data[x][y] + i + j - 1) / 9) * 9);
-                            newData[x + i * data.Length][y + j * data[0].Length] = value;
+                            var ypos=y + j * data[0].Length;
+                            var value = ( data[x][y] + i + j) - (((data[x][y] + i + j - 1) / 9) * 9);
+                            nodes[xpos][ypos] = new Node(xpos ,ypos,value);
                         }
                     }
                 }
             }
-            this.data = newData;
+
+            for(int x=0;x<nodes.Length;x++){
+                for(int y=0;y<nodes[x].Length;y++){
+                    var node=nodes[x][y];
+                    if(x>0){
+                        node.left=nodes[x-1][y];
+                    }
+                    if(y>0){
+                        node.up=nodes[x][y-1];
+                    }
+                    if(x<nodes.Length-1){
+                        node.right=nodes[x+1][y];
+                    }
+                    if(y<nodes[x].Length-1){
+                        node.down=nodes[x][y+1];
+                    }
+                }
+            }   
         }
         public long LowestRisk()
         {
-            Console.WriteLine($"{data.Length}x{data[0].Length}");
+            Console.WriteLine($"{nodes.Length}x{nodes[0].Length}");
             return lowerRisk();
         }
 
         long lowerRisk()
         {
-            var origin= new Tuple<int, int>(0, 0);
-            var priorityQueue = new Dictionary<Tuple<int, int>,long>();            
+            var priorityQueue = new FastPriorityQueue<Node>(nodes.Length * nodes[0].Length);
 
-            for(int x=0;x<data.Length;x++){
-                for(int y=0;y<data[0].Length;y++){
-                    var item= new Tuple<int, int>(x, y);
-                    priorityQueue.Add(item, int.MaxValue);
+            for(int x=0;x<nodes.Length;x++){
+                for(int y=0;y<nodes[0].Length;y++){
+                    priorityQueue.Enqueue(nodes[x][y],int.MaxValue);
                 }
             }
-            priorityQueue[origin]=0;
+            priorityQueue.UpdatePriority(nodes[0][0],0);
 
             while(priorityQueue.Count>0){
                 if(priorityQueue.Count%1000==0){
                     Console.Write($"{priorityQueue.Count}.");
                 }
-                var current = priorityQueue.Aggregate((l, r) => l.Value < r.Value ? l : r); //priorityQueue.MinBy(r=>r.Value);
-                priorityQueue.Remove(current.Key);
-                var x = current.Key.Item1;
-                var y = current.Key.Item2;
-                var value = current.Value;
-                if(x==data.Length-1 && y==data[0].Length-1){
+                var current = priorityQueue.Dequeue();
+
+                var x = current.x;
+                var y = current.y;
+                var value = (int)current.Priority;
+                if(x==nodes.Length-1 && y==nodes[0].Length-1){
                     return value;
                 }
-                if(x>0){
-                    var left = new Tuple<int, int>(x-1, y);
-                    if(priorityQueue.ContainsKey(left)){
-                        var newValue = value + data[left.Item1][left.Item2];
-                        if(newValue<priorityQueue[left]){
-                            priorityQueue[left]=newValue;
+                if(x>0){             
+                    var node=current.left;       
+                    if(priorityQueue.Contains(node)){
+                        var newValue = value + node.value;
+                        if(newValue<node.Priority){
+                            priorityQueue.UpdatePriority(node,newValue);                            
                         }
                     }
                 }
                 if(y>0){
-                    var up = new Tuple<int, int>(x, y-1);
-                    if(priorityQueue.ContainsKey(up)){
-                        var newValue = value + data[up.Item1][up.Item2];
-                        if(newValue<priorityQueue[up]){
-                            priorityQueue[up]=newValue;
+                    var node=current.up;       
+                    if(priorityQueue.Contains(node)){
+                        var newValue = value + node.value;
+                        if(newValue<node.Priority){
+                            priorityQueue.UpdatePriority(node,newValue);                            
                         }
                     }
                 }
-                if(x<data.Length-1){
-                    var right = new Tuple<int, int>(x+1, y);
-                    if(priorityQueue.ContainsKey(right)){
-                        var newValue = value + data[right.Item1][right.Item2];
-                        if(newValue<priorityQueue[right]){
-                            priorityQueue[right]=newValue;
+                if(x<nodes.Length-1){
+                     var node=current.right;       
+                    if(priorityQueue.Contains(node)){
+                        var newValue = value + node.value;
+                        if(newValue<node.Priority){
+                            priorityQueue.UpdatePriority(node,newValue);                            
                         }
                     }
                 }
-                if(y<data[0].Length-1){
-                    var down = new Tuple<int, int>(x, y+1);
-                    if(priorityQueue.ContainsKey(down)){
-                        var newValue = value + data[down.Item1][down.Item2];
-                        if(newValue<priorityQueue[down]){
-                            priorityQueue[down]=newValue;
+                if(y<nodes[0].Length-1){
+                    var node=current.down;       
+                    if(priorityQueue.Contains(node)){
+                        var newValue = value + node.value;
+                        if(newValue<node.Priority){
+                            priorityQueue.UpdatePriority(node,newValue);                            
                         }
                     }
                 }
@@ -105,28 +145,5 @@ namespace Day15.Chiton
             //not found
             return -1;
         }
-    }
-
-    public static class Extensions{
-        public static TSource MinBy<TSource>(
-    this IEnumerable<TSource> source,
-    Func<TSource, IComparable> projectionToComparable
-) {
-    using (var e = source.GetEnumerator()) {
-        if (!e.MoveNext()) {
-            throw new InvalidOperationException("Sequence is empty.");
-        }
-        TSource min = e.Current;
-        IComparable minProjection = projectionToComparable(e.Current);
-        while (e.MoveNext()) {
-            IComparable currentProjection = projectionToComparable(e.Current);
-            if (currentProjection.CompareTo(minProjection) < 0) {
-                min = e.Current;
-                minProjection = currentProjection;
-            }
-        }
-        return min;                
-    }
-}
     }
 }

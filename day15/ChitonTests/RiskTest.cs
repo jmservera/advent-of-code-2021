@@ -21,8 +21,7 @@ namespace Day15.ChitonTests
         [InlineData("input.txt",2825)]
         public void LowestRiskFull(string fileName, int expected)
         {
-            var path = DataLoader.LoadData(fileName);
-            path.ExpandMap();
+            var path = DataLoader.LoadData(fileName,true);
             var actual = path.LowestRisk();
             Assert.Equal(expected, actual);
         }
