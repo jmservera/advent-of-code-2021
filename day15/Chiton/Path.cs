@@ -59,18 +59,10 @@ namespace Day15.Chiton
             {
                 riskX = current + lowerRisk(x + 1, y);
             }
-            if(x>0)
-            {
-                riskX = Math.Min(riskX, current + lowerRisk(x - 1, y));
-            }
 
             if (y < data[0].Length - 1)
             {
                 riskY = current + lowerRisk(x, y + 1);
-            }
-            if(y>0)
-            {
-                riskY = Math.Min(riskY, current + lowerRisk(x, y - 1));
             }
 
             var risk = Math.Min(riskX, riskY);
