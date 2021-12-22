@@ -38,13 +38,11 @@ public class ProbeLauncher
 
         var steps=new List<int[]>();
         int x=0,y=0;
-        Console.WriteLine($"{x},{y}");
         do{
             x+=xSpeed;
             y+=ySpeed;
             maxY=Math.Max(maxY,y);
 
-            Console.WriteLine($"{x},{y}");
             steps.Add(new int[]{x,y});
             if(xSpeed>0){
                 xSpeed--;
@@ -67,7 +65,25 @@ public class ProbeLauncher
         return steps.ToArray();
     }
     
-    public (int,int) FindBestShot(){
-        return (0,0);
+    public ((int,int),int) FindBestShot(){
+        //brute force
+        var bestShot=(0,0);
+        int bestShotScore=0;
+        int countShots=0;
+
+        for(int x=1;x<=x2;x++){
+            for(int y=-x2;y<=x2;y++){
+                var steps=Launch(x,y);
+                if(trenchShot){
+                    countShots++;
+                    if(maxY>bestShotScore){
+                        bestShot=(x,y);
+                        bestShotScore=maxY;
+                    }
+                }
+            }
+        }
+        Console.WriteLine($"Best shot: {bestShotScore} {bestShot} count:{countShots}");
+        return (bestShot,countShots);
     }
 }
