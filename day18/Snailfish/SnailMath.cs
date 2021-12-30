@@ -120,6 +120,26 @@ public class SnailMath
         return magnitude(node);
     }
 
+    public int MaxSum(string[] lines)
+    {
+        var max=0;
+        for(int i=0;i<lines.Length;i++){
+            for(int j=i+1;j<lines.Length;j++){
+                var sum=Sum(lines[i],lines[j]);
+                var magnitude=Magnitude(sum);
+                if(magnitude>max){
+                    max=magnitude;
+                }
+                sum=Sum(lines[j],lines[i]);
+                magnitude=Magnitude(sum);
+                if(magnitude>max){
+                    max=magnitude;
+                }
+            }
+        }
+        return max;
+    }
+
     private int magnitude(SnailNode node)
     {
         if(node.Type==SnailNodeType.Number){

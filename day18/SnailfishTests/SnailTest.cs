@@ -80,6 +80,16 @@ public class SnailTest
     }
 
     [Theory]
+    [InlineData("test1.txt",3993)]
+    [InlineData("input.txt",4687)]
+    public void TestLargestSum(string filename, int expected){
+        SnailMath snailMath = new SnailMath();
+        var lines=File.ReadAllLines(filename);
+        int result=snailMath.MaxSum(lines);
+        Assert.Equal(expected,result);
+    }
+
+    [Theory]
     [InlineData("[9,1]",29)]
     [InlineData("[1,9]",21)]
     [InlineData("[[1,2],[[3,4],5]]",143)]
